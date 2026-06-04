@@ -158,35 +158,6 @@ class Esp32ExceptionDecoder(DeviceMonitorFilterBase):
     ADDR_PATTERN = re.compile(r"((?:0x[0-9a-fA-F]{8}:0x[0-9a-fA-F]{8}(?: |$))+)")
     ADDR_SPLIT = re.compile(r"[ :]")
     PREFIX_RE = re.compile(r"^ *")
-    
-    # Patterns that indicate we're in an exception/backtrace context
-    BACKTRACE_KEYWORDS = re.compile(
-        r"(Backtrace:|"
-        r"\bPC:\s*0x[0-9a-fA-F]{8}\b|"
-        r"abort\(\) was called at PC|"
-        r"Guru Meditation Error:|"
-        r"panic'ed|"
-        r"register dump:|"
-        r"Stack smashing protect failure!|"
-        r"CORRUPT HEAP:|"
-        r"assertion .* failed:|"
-        r"Debug exception reason:|"
-        r"Undefined behavior of type)",
-        re.IGNORECASE
-    )
-
-    # Chip name mapping for ROM ELF files
-    CHIP_NAME_MAP = {
-        "esp32": "esp32",
-        "esp32s2": "esp32s2",
-        "esp32s3": "esp32s3",
-        "esp32c2": "esp32c2",
-        "esp32c3": "esp32c3",
-        "esp32c5": "esp32c5",
-        "esp32c6": "esp32c6",
-        "esp32h2": "esp32h2",
-        "esp32p4": "esp32p4",
-    }
 
     # Stack memory dump: "3fca0000: 0x3fce0000 0x3fce0000 ..."
     STACK_MEM_LINE = re.compile(
@@ -805,6 +776,16 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
             self._rx_buf_bytes = 0
 
         text = "".join(chunks)
+        if self.buffer:
+            # Re-introduce held-over bytes from the previous call into the
+            # output stream so they are visible to both the pattern matchers
+            # (via ``line = text[last:idx]``) and to the caller (via
+            # ``text[:last]``). Previously these bytes were prepended only
+            # onto ``line`` and silently dropped from the returned text,
+            # causing the first character(s) of lines split across rx
+            # chunks to disappear from the serial monitor output.
+            text = self.buffer + text
+            self.buffer = ""
 
         last = 0
         while True:
@@ -817,9 +798,6 @@ See https://docs.platformio.org/page/projectconf/build_configurations.html
                 return text[:last]
 
             line = text[last:idx]
-            if self.buffer:
-                line = self.buffer + line
-                self.buffer = ""
             last = idx + 1
 
             # Feed RISC-V panic accumulator

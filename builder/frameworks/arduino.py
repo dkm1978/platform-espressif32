@@ -342,6 +342,9 @@ if flag_custom_sdkconfig:
 
     build_unflags = " ".join(env['BUILD_UNFLAGS'])
 
+    # -Wl,--wrap=log_printf: remove always. Diagnostics is not supported with HybridCompile
+    build_unflags += " -Wl,--wrap=log_printf"
+
     # -mdisable-hardware-atomics: always for solo1, or when PSRAM is NOT configured
     if has_unicore_flags() or not has_psram_config():
         build_unflags += " -mdisable-hardware-atomics"
@@ -356,6 +359,10 @@ if flag_custom_sdkconfig:
 
     new_build_unflags = build_unflags.split()
     env.Replace(BUILD_UNFLAGS=new_build_unflags)
+
+    # add linker script esp32.rom.libc-funcs.ld for esp32 when PSRAM is NOT configured
+    if mcu == "esp32" and not has_psram_config():
+        env.Append(LINKFLAGS=["-T", "esp32.rom.libc-funcs.ld"])
 
 
 def get_MD5_hash(phrase):

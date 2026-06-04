@@ -20,10 +20,10 @@ Prerequisites:
 ## Installation
 
 ### VSCode Extension
-- [Download and install Microsoft Visual Studio Code](https://code.visualstudio.com/). pioarduino IDE is on top of it.
+- Download and install [Microsoft Visual Studio Code](https://code.visualstudio.com/). [pioarduino IDE](https://marketplace.visualstudio.com/items?itemName=pioarduino.pioarduino-ide) is on top of it.
 - Open the extension manager.
 - Search for the `pioarduino ide` extension.
-- Install pioarduino IDE extension.
+- Install [pioarduino IDE](https://marketplace.visualstudio.com/items?itemName=pioarduino.pioarduino-ide) extension.
 
 ### CLI
 ```bash
@@ -58,10 +58,6 @@ pioarduino provides native support for multiple filesystem options, allowing you
 - **SPIFFS** - Simple legacy filesystem. While still functional, LittleFS is recommended for new projects due to better wear-leveling and reliability.
 - **FatFS** - Industry-standard FAT filesystem with broad compatibility across platforms and operating systems.
 
-### FatFS Integration
-
-FatFS support has been fully integrated as a Python module, providing the same seamless experience as LittleFS. Configuration is straightforward - simply specify your preferred filesystem in your project settings: See [FATFS_INTEGRATION.md](FATFS_INTEGRATION.md) for detailed documentation.
-
 **Quick Start:**
 
 ```ini
@@ -80,7 +76,7 @@ pio run -t download_fatfs # Download and extract FatFS from device
 See the [arduino-fatfs example](examples/arduino-fatfs/) for a complete working example.
 
 ### Stable Arduino
-currently espressif Arduino 3.3.8 and IDF v5.5.4
+currently espressif Arduino 3.3.9 and IDF v5.5.4.
 
 ```ini
 [env:stable]
