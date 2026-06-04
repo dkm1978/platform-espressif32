@@ -75,7 +75,6 @@ GDB_TOOL_PACKAGES = penv_setup_module.GDB_TOOL_PACKAGES
 DEFAULT_DEBUG_SPEED = "5000"
 DEFAULT_APP_OFFSET = "0x10000"
 tl_install_name = "tool-esp_install"
-ARDUINO_ESP32_PACKAGE_URL = "https://raw.githubusercontent.com/espressif/arduino-esp32/master/package/package_esp32_index.template.json"
 
 # MCUs that support ESP-builtin debug
 ESP_BUILTIN_DEBUG_MCUS = frozenset([
@@ -938,6 +937,7 @@ class Espressif32Platform(PlatformBase):
         if "tools" not in debug:
             debug["tools"] = {}
 
+        # Debug tool configuration
         for link in upload_protocols:
             if link in non_debug_protocols or link in debug["tools"]:
                 continue
